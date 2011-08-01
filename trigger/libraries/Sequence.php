@@ -64,6 +64,8 @@ class Sequence
 		// Write the start mark
 		// -------------------------------------
 		
+		$this->EE->load->library('table');
+		
 		$start_id = write_log_mark('start', trim($seq_name));
 		
 		// -------------------------------------

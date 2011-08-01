@@ -7,6 +7,6 @@ TRIGGER SEQUENCE START
 ee : site : clear cache
 ee : site : set root ({auto_base_url}/)
 ee : site : set cp index ({auto_base_url}/{system_folder}/index.php)
-ee : site : set theme url ({auto_base_url}/themes)
+ee : site : set theme url ({auto_base_url}/themes/)
 ee : site : set theme path ({server_root}/themes)
 TRIGGER SEQUENCE END

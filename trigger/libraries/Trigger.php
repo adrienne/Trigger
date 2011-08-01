@@ -413,7 +413,9 @@ class Trigger
 		// Set driver folder as constant
 		// -------------------------------------
 
-		define('DRIVER_PATH', $driver_folder);
+		if(!defined('DRIVER_PATH')) {
+		  define('DRIVER_PATH', $driver_folder);
+		}
 
 		// -------------------------------------
 		// Add as package
