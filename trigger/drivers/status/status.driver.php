@@ -108,7 +108,8 @@ class Driver_status
 
 		if(!$new_name) return "no new group name provided";
 		
-		if( ! $row = is_object($this->does_group_exist($group_name)) ) return $row;
+		if( ! is_object($row = $this->does_group_exist($old_name)) )
+			return "could not find {$old_name} status group";
 
 		// Check to see if the new group name already exists
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'))->where('group_name', $new_name);
@@ -147,7 +148,8 @@ class Driver_status
 	{
 		if(!$group_name) return "no group name provided";
 		
-		if( ! $row = is_object($this->does_group_exist($group_name)) ) return $row;
+		if( ! is_object($row = $this->does_group_exist($group_name)) )
+			return "could not find status group";
 		
 		$this->EE->status_model->delete_status_group($row->group_id);
 	
@@ -172,7 +174,7 @@ class Driver_status
 
 		extract($check_group_status);
 		
-		if( !  is_object($row = $this->does_group_exist($group_name)) ) return $row;
+		if( ! is_object($row = $this->does_group_exist($group_name)) ) return $row;
 		
 		// Add the status
 		$insert_data = array(
@@ -211,24 +213,35 @@ class Driver_status
 		
 		extract($check_group_status);
 		
-		if( ! is_object($row = $this->does_group_exist($group_name)) ) return $row;
+		if( ! is_object($row = $this->does_group_exist($group_name)) )
+			return "could not find {$group_name} status group";
 		
-		// Add the status
-		$insert_data = array(
-			'status'			=> $status_name,
-			'site_id'			=> $this->EE->config->item('site_id'),
-			'group_id'			=> $row->group_id,
-			'status_order' 		=> $this->EE->status_model->get_next_status_order($row->group_id),
-			'highlight'			=> $highlight
-		);
+		// Get the status id from the status
+		// name and delete from that.
+		// Note, we are not deleting the group if there
+		// are no more status left in the group.
 		
-		if($this->EE->db->insert('statuses', $insert_data)):
+		$obj = $this->EE->db
+				->limit(1)
+				->where('site_id', $this->EE->config->item('site_id'))
+				->where('group_id', $row->group_id)
+				->where('status', $status_name)
+				->get('statuses');
 		
-			return "status added successfully";
+		if($obj->num_rows() == 0)
+			return "unable to find status: {$status_name}";
+		
+		$status = $obj->row();	
+			
+		$this->EE->db->limit(1)->where('status_id', $status->status_id);
+		
+		if($this->EE->db->delete('statuses')):
+		
+			return "status deleted successfully";
 			
 		else:
 		
-			return "error in adding status";
+			return "error in deleting status";
 		
 		endif;
 	}
