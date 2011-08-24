@@ -23,7 +23,7 @@ h2. Core Drivers
 * seq
 * site
 * snippets
-* status (in development)
+* status
 * templates
 
 h2. Team
